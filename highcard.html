@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Card Game</title>
+        <script type="module">
+            //Overall I think the use of conditionals in this project is excessive. However it did teach me different methods for arrays
+            //and things to watch out for when conceptualizing projects and how variables interact with each other.
+
+            document.getElementById("prepButton").addEventListener("click", Shuffle);
+            document.getElementById("playButton").addEventListener("click", Play);
+
+            const suits = ["Mandela", "Dr King", "Malcom X", "Madam CJ Walker"];
+            const values = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0A", "0B", "0C", "0D"];
+
+            const p1Deck = [];
+            const p2Deck = [];                
+            
+            let p1Score = 0;
+            let p2Score = 0;
+            let playCount = 0;
+
+            let everyFifth = false;
+
+            class Deck {
+                constructor(cards = createDeck()) {
+                    this.cards = cards;
+                }
+            }
+
+            class Card {
+                constructor(suit, value) {
+                    this.suit = suit;
+                    this.value = value;
+                }
+            }
+
+            function createDeck() {
+                return suits.flatMap(suit => {
+                    return values.map(value => {
+                        return new Card(suit, value);
+                    });
+                });
+            }
+
+            const deck = new Deck();
+
+            function Shuffle() {
+                for (let i = deck.cards.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    const X = deck.cards[i];
+                    deck.cards[i] = deck.cards[j];
+                    deck.cards[j] = X;
+                }
+                console.log(deck);
+                Deal();
+            }
+            function Deal() {
+                for (let i = 0; i < deck.cards.length / 2; i++) {
+                    p1Deck[i] = deck.cards[i];
+                }
+                for (let i = 26; i < deck.cards.length; i++) {
+                    p2Deck[i] = deck.cards[i];
+                }
+
+                return p1Deck;
+                return p2Deck;
+            }
+            
+            function Play() {
+                const p1Index = Math.floor(Math.random() * ((p1Deck.length - 1) - 1) + 1);
+                const p2Index = Math.floor(Math.random() * ((p2Deck.length - 1) - 26) + 26);
+                const p1Card = p1Deck[p1Index];
+                const p2Card = p2Deck[p2Index];
+
+                //THIS COULD BE CLEANED UP A LOT ---------------------------------------------------------------------
+                if(playCount == 5) {
+                    if (p1Card.suit === "Madam CJ Walker" && p2Card.suit !== "Madam CJ Walker" && p1Card.value <= p2Card.value) {
+                        everyFifth = true;
+                        console.log("Player 1 Should Win");
+                        p1Score++;
+                    }
+                    else if (p2Card.suit === "Madam CJ Walker" && p1Card.suit !== "Madam CJ Walker" && p2Card.value <= p1Card.value) {
+                        everyFifth = true;
+                        console.log("Player 2 Should Win");
+                        p2Score++;
+                    }
+                }
+                else if (playCount > 5) {
+                    playCount = 1;
+                    everyFifth = false;
+                }
+                //----------------------------------------------------------------------------------------------------
+
+                if (parseInt(p1Card.value, 16) > parseInt(p2Card.value, 16) && !everyFifth) {
+                    p1Score++;
+                    playCount++;
+                    p1Deck.splice(p1Index, 1);
+                    p2Deck.splice(p2Index, 1);
+                }
+                else if (parseInt(p2Card.value, 16) > parseInt(p1Card.value, 16) && !everyFifth) {
+                    p2Score++;
+                    playCount++;
+                    p1Deck.splice(p1Index, 1);
+                    p2Deck.splice(p2Index, 1);
+                }
+                else if (parseInt(p1Card.value, 16) == parseInt(p1Card.value, 16)) {
+                    console.log("It's a Draw!");
+                    playCount++;
+                    p1Deck.splice(p1Index, 1);
+                    p2Deck.splice(p2Index, 1);
+                }
+                
+                let scoreBoard = document.createElement('h2');
+                scoreBoard.innerHTML = "Player 1 Score: " + p1Score + " vs. Player 2 Score: " + p2Score;
+                document.getElementById("paste").appendChild(scoreBoard);
+
+                if (p1Deck.length == 0 && p2Deck.length == 26) {
+                    GameOver();
+                }
+
+                console.log("Player 1 Card: ");
+                console.log(p1Card);
+                console.log("Player 2 Card: ");
+                console.log(p2Card);
+                console.log(playCount);
+            }
+            function GameOver() {
+                if(p1Score > p2Score) {
+                    let endGame = document.createElement('h1');
+                    endGame.innerHTML = "GAME OVER! PLAYER 1 WINS!";
+                    document.getElementById("paste").appendChild(endGame);
+                }
+                else if(p2Score > p1Score) {
+                    let endGame = document.createElement('h1');
+                    endGame.innerHTML = "GAME OVER! PLAYER 2 WINS!";
+                    document.getElementById("paste").appendChild(endGame);
+                }
+                else if (p1Score == p2Score) {
+                    let endGame = document.createElement('h1');
+                    endGame.innerHTML = "GAME OVER! IT'S A DRAW";
+                    document.getElementById("paste").appendChild(endGame);
+                }     
+            }
+            
+        </script>
+    </head>
+    <body id="paste">
+        <button id="prepButton">Shuffle/Deal</button>
+        <button id="playButton">Play Game</button>
+    </body>
+</html>
