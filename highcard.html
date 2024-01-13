@@ -16,8 +16,8 @@
             const values = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0A", "0B", "0C", "0D"];
 
             const p1Deck = [];
-            const p2Deck = [];                
-            
+            const p2Deck = []; 
+
             let p1Score = 0;
             let p2Score = 0;
             let playCount = 0;
@@ -58,7 +58,7 @@
                 Deal();
             }
             function Deal() {
-                for (let i = 0; i < deck.cards.length / 2; i++) {
+                for (let i = 0; i < deck.cards.length / 4; i++) {
                     p1Deck[i] = deck.cards[i];
                 }
                 for (let i = 26; i < deck.cards.length; i++) {
